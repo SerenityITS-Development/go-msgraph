@@ -54,6 +54,53 @@ func (u *User) setGraphClient(gC *GraphClient) {
 	u.graphClient = gC
 }
 
+// ListCalendarGroups returns all calendar groups associated to that user.
+// Supports optional OData query parameters https://docs.microsoft.com/en-us/graph/query-parameters
+//
+// Reference: https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user-list-calendargroups
+func (u User) ListCalendarGroups(opts ...ListQueryOption) (CalendarGroups, error) {
+	if u.graphClient == nil {
+		return CalendarGroups{}, ErrNotGraphClientSourced
+	}
+	resource := fmt.Sprintf("/users/%v/calendarGroups", u.ID)
+
+	var marsh struct {
+		CalendarGroups CalendarGroups `json:"value"`
+	}
+	err := u.graphClient.makeGETAPICall(resource, compileListQueryOptions(opts), &marsh)
+
+	marsh.CalendarGroups.setGraphClient(u.graphClient, &u)
+	return marsh.CalendarGroups, err
+}
+
+// CreateCalendarGroup returns all calendar groups associated to that user.
+// Supports optional OData query parameters https://docs.microsoft.com/en-us/graph/query-parameters
+//
+// Reference: https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/api/user-list-calendargroups
+func (u User) CreateCalendarGroup(name string, opts ...CreateQueryOption) (CalendarGroup, error) {
+
+	if u.graphClient == nil {
+		return CalendarGroup{}, ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/calendarGroups", u.ID)
+	calendarGroup := CalendarGroup{graphClient: u.graphClient}
+	bodyBytes, err := json.Marshal(struct {
+		Name string `json:"name"`
+	}{Name: name})
+	if err != nil {
+		return CalendarGroup{}, err
+	}
+	if err != nil {
+		return calendarGroup, err
+	}
+
+	reader := bytes.NewReader(bodyBytes)
+	err = u.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &calendarGroup)
+	calendarGroup.setGraphAndUser(u.graphClient, &u)
+	return calendarGroup, err
+}
+
 // ListCalendars returns all calendars associated to that user.
 // Supports optional OData query parameters https://docs.microsoft.com/en-us/graph/query-parameters
 //

@@ -3,6 +3,7 @@ package msgraph
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 // Calendar represents a single calendar of a user
@@ -17,6 +18,7 @@ type Calendar struct {
 	ChangeKey           string // Identifies the version of the calendar object. Every time the calendar is changed, changeKey changes as well. This allows Exchange to apply changes to the correct version of the object. Read-only.
 
 	Owner EmailAddress // If set, this represents the user who created or added the calendar. For a calendar that the user created or added, the owner property is set to the user. For a calendar shared with the user, the owner property is set to the person who shared that calendar with the user.
+	calendarGroup *CalendarGroup
 
 	graphClient *GraphClient // the graphClient that created this instance
 }
@@ -30,6 +32,28 @@ func (c Calendar) String() string {
 func (c *Calendar) setGraphClient(graphClient *GraphClient) {
 	c.graphClient = graphClient
 	c.Owner.setGraphClient(graphClient)
+
+	user, err := c.Owner.GetUser()
+	if err != nil {
+		log.Println(err)
+	}
+
+	c.calendarGroup.setGraphAndUser(graphClient, &user)
+}
+
+// Delete deletes this calendar instance for this user. Use with caution.
+//
+// Reference: https://docs.microsoft.com/en-us/graph/api/user-delete
+func (c Calendar) Delete(opts ...DeleteQueryOption) error {
+	if c.graphClient == nil {
+		return ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/calendars/%v", c.Owner.Address, c.ID)
+
+	// TODO: check return body, maybe there is some potential success or error message hidden in it?
+	err := c.graphClient.makeDELETEAPICall(resource, compileDeleteQueryOptions(opts), nil)
+	return err
 }
 
 // UnmarshalJSON implements the json unmarshal to be used by the json-library
