@@ -38,7 +38,9 @@ func (c *Calendar) setGraphClient(graphClient *GraphClient) {
 		log.Println(err)
 	}
 
-	c.calendarGroup.setGraphAndUser(graphClient, &user)
+	if c.calendarGroup != nil {
+		c.calendarGroup.setGraphAndUser(graphClient, &user)
+	}
 }
 
 // Delete deletes this calendar instance for this user. Use with caution.
