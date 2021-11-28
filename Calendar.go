@@ -1,9 +1,9 @@
 package msgraph
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
 // Calendar represents a single calendar of a user
@@ -18,8 +18,8 @@ type Calendar struct {
 	ChangeKey           string // Identifies the version of the calendar object. Every time the calendar is changed, changeKey changes as well. This allows Exchange to apply changes to the correct version of the object. Read-only.
 
 	Owner EmailAddress // If set, this represents the user who created or added the calendar. For a calendar that the user created or added, the owner property is set to the user. For a calendar shared with the user, the owner property is set to the person who shared that calendar with the user.
-	calendarGroup *CalendarGroup
 
+	calendarGroup *CalendarGroup
 	graphClient *GraphClient // the graphClient that created this instance
 }
 
@@ -32,15 +32,37 @@ func (c Calendar) String() string {
 func (c *Calendar) setGraphClient(graphClient *GraphClient) {
 	c.graphClient = graphClient
 	c.Owner.setGraphClient(graphClient)
+}
 
-	user, err := c.Owner.GetUser()
+func (c *Calendar) ShareReadWith(email EmailAddress, isInsideOrganization bool,
+		isRemovable bool, role string, opts ...CreateQueryOption) (CalendarPermission, error) {
+
+	if c.graphClient == nil {
+		return CalendarPermission{}, ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/calendars/%v/calendarPermissions", c.Owner.Address, c.ID)
+
+	calendarPermission := CalendarPermission{graphClient: c.graphClient, calendar: c}
+	bodyBytes, err := json.Marshal(struct {
+		IsInsideOrganization bool `json:"isInsideOrganization"`
+		IsRemovable bool `json:"isRemovable"`
+		Role string `json:"role"`
+		EmailAppliedTo EmailAddress `json:"emailAddress"`
+	}{
+		IsRemovable: isRemovable,
+		IsInsideOrganization: isInsideOrganization,
+		Role: role,
+		EmailAppliedTo: email,
+	})
 	if err != nil {
-		log.Println(err)
+		return calendarPermission, err
 	}
 
-	if c.calendarGroup != nil {
-		c.calendarGroup.setGraphAndUser(graphClient, &user)
-	}
+
+	reader := bytes.NewReader(bodyBytes)
+	err = c.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &calendarPermission)
+	return calendarPermission, err
 }
 
 // Delete deletes this calendar instance for this user. Use with caution.

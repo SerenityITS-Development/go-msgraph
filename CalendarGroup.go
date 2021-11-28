@@ -7,10 +7,10 @@ import (
 )
 
 type CalendarGroup struct {
-	Name      string `json:"name"`
-	ClassID   string `json:"classId"`
-	ChangeKey string `json:"changeKey"`
-	ID        string `json:"id"`
+	Name      string
+	ClassID   string
+	ChangeKey string
+	ID        string
 
 	user *User
 
@@ -22,9 +22,8 @@ func (cG CalendarGroup) String() string {
 		cG.ID, cG.Name, cG.ClassID, cG.ChangeKey)
 }
 
-func (cG *CalendarGroup) setGraphAndUser(graphClient *GraphClient, user *User) {
+func (cG *CalendarGroup) setGraphClient(graphClient *GraphClient) {
 	cG.graphClient = graphClient
-	cG.user = user
 }
 // CreateCalendar creates calendar inside the calendar group.
 // Supports optional OData query parameters https://docs.microsoft.com/en-us/graph/query-parameters

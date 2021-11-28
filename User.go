@@ -84,7 +84,7 @@ func (u User) CreateCalendarGroup(name string, opts ...CreateQueryOption) (Calen
 	}
 
 	resource := fmt.Sprintf("/users/%v/calendarGroups", u.ID)
-	calendarGroup := CalendarGroup{graphClient: u.graphClient}
+	calendarGroup := CalendarGroup{graphClient: u.graphClient, user: &u}
 	bodyBytes, err := json.Marshal(struct {
 		Name string `json:"name"`
 	}{Name: name})
@@ -97,7 +97,6 @@ func (u User) CreateCalendarGroup(name string, opts ...CreateQueryOption) (Calen
 
 	reader := bytes.NewReader(bodyBytes)
 	err = u.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &calendarGroup)
-	calendarGroup.setGraphAndUser(u.graphClient, &u)
 	return calendarGroup, err
 }
 

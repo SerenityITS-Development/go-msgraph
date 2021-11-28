@@ -15,9 +15,10 @@ func (c CalendarGroups) String() string {
 }
 
 // setGraphClient sets the graphClient instance in this instance and all child-instances (if any)
-func (c CalendarGroups) setGraphClient(gC *GraphClient, u *User) CalendarGroups {
+func (c CalendarGroups) setGraphClient(gC *GraphClient, user *User) CalendarGroups {
 	for i := range c {
-		c[i].setGraphAndUser(gC, u)
+		c[i].setGraphClient(gC)
+		c[i].user = user
 	}
 	return c
 }
