@@ -1,8 +1,6 @@
 package msgraph
 
 import (
-	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -32,5 +30,5 @@ func (c CalendarGroups) GetByName(name string) (CalendarGroup, error) {
 			return calendarGroup, nil
 		}
 	}
-	return CalendarGroup{}, errors.New(fmt.Sprintf("cannot find calendar group %s", name))
+	return CalendarGroup{}, ErrFindCalendarGroup
 }
