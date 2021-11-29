@@ -19,7 +19,6 @@ type Calendar struct {
 
 	Owner EmailAddress // If set, this represents the user who created or added the calendar. For a calendar that the user created or added, the owner property is set to the user. For a calendar shared with the user, the owner property is set to the person who shared that calendar with the user.
 
-	calendarGroup *CalendarGroup
 	graphClient *GraphClient // the graphClient that created this instance
 }
 
@@ -59,10 +58,27 @@ func (c *Calendar) ShareReadWith(email EmailAddress, isInsideOrganization bool,
 		return calendarPermission, err
 	}
 
-
 	reader := bytes.NewReader(bodyBytes)
 	err = c.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &calendarPermission)
 	return calendarPermission, err
+}
+
+func (c Calendar) CreateEvent(event CalendarEvent, opts ...CreateQueryOption) (CalendarEvent, error) {
+	if c.graphClient == nil {
+		return CalendarEvent{}, ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/calendars/%v/events", c.Owner.Address, c.ID)
+	newEvent := CalendarEvent{graphClient: c.graphClient}
+	bodyBytes, err := json.Marshal(event)
+	if err != nil {
+		return newEvent, err
+	}
+
+	reader := bytes.NewReader(bodyBytes)
+	err = c.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &newEvent)
+
+	return newEvent, err
 }
 
 // Delete deletes this calendar instance for this user. Use with caution.

@@ -7,9 +7,11 @@ import (
 
 var (
 	// First Attendee used for the Unit tests
-	testAttendee1 = Attendee{Name: "Testname", Email: "testname@contoso.com", Type: "attendee", ResponseStatus: ResponseStatus{Response: "accepted", Time: time.Now()}}
+	testAttendee1 = Attendee{ EmailAddress: EmailAddress{Name: "Testname", Address: "testname@contoso.com"}, Type: "attendee",
+		ResponseStatus: &ResponseStatus{Response: "accepted", Time: time.Now()}}
 	// Second Attendee used for the Unit tests
-	testAttendee2 = Attendee{Name: "Testuser", Email: "testuser@contoso.com", Type: "attendee", ResponseStatus: ResponseStatus{Response: "declined", Time: time.Now()}}
+	testAttendee2 = Attendee{ EmailAddress: EmailAddress{Name: "Testuser", Address: "testuser@contoso.com"}, Type: "attendee",
+		ResponseStatus: &ResponseStatus{Response: "declined", Time: time.Now()}}
 )
 
 func TestAttendee_Equal(t *testing.T) {

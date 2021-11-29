@@ -13,7 +13,6 @@ type CalendarGroup struct {
 	ID        string
 
 	user *User
-
 	graphClient *GraphClient
 }
 
@@ -36,7 +35,7 @@ func (cG *CalendarGroup) CreateCalendar(name string, opts ...CreateQueryOption) 
 	}
 
 	resource := fmt.Sprintf("/users/%v/calendarGroups/%v/calendars", cG.user.ID, cG.ID)
-	calendar := Calendar{graphClient: cG.graphClient, calendarGroup: cG}
+	calendar := Calendar{graphClient: cG.graphClient}
 	bodyBytes, err := json.Marshal(struct {
 		Name string `json:"name"`
 	}{Name: name})

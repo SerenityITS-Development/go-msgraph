@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"time"
 )
 
 func TestCalendar_String(t *testing.T) {
@@ -73,5 +74,72 @@ func TestCalendar_ShareReadWith(t *testing.T) {
 	err = group.Delete()
 	if err != nil {
 		log.Fatalf("failed to delete calendar group: %v", err)
+	}
+}
+
+
+
+func TestCalendar_CreateEvent(t *testing.T) {
+
+	duration, err := time.ParseDuration("1h")
+	if err != nil {
+		log.Fatalf("failed to parse duration: %v", err)
+	}
+
+	attendees := Attendees{ {EmailAddress: EmailAddress{ Address: "taimana@outlook.com" }, Type: AttendeeRequired},
+		{EmailAddress: EmailAddress{ Address: "taimana.nospam@outlook.com" }, Type: AttendeeOptional} }
+	eventPost := CalendarEvent{
+		Subject:               "Test",
+		StartTime:             DateTimeTimeZone{}.Now(),
+		EndTime:               DateTimeTimeZone{}.NowAdd(duration),
+		Attendees:             &attendees,
+		AllowNewTimeProposals: false,
+	}
+
+	client, err := NewGraphClient(
+		msGraphTenantID,
+		msGraphApplicationID,
+		msGraphClientSecret)
+	if err != nil {
+		log.Fatalf("failed to create graph client: %v", err)
+	}
+
+	user, err := client.GetUser(msGraphExistingUserPrincipalInGroup)
+	if err != nil {
+		log.Fatalf("failed to get user: %v", err)
+	}
+
+	group, err := user.CreateCalendarGroup("Events")
+	if err != nil {
+		log.Fatalf("failed to create calendar group: %v", err)
+	}
+
+	calendar, err := group.CreateCalendar("Event Calendar")
+	if err != nil {
+		log.Fatalf("failed to create calendar: %v", err)
+	}
+
+	newEvent, err := calendar.CreateEvent(eventPost)
+	if err != nil {
+		log.Fatalf("failed to create event: %v", err)
+	}
+
+	err = newEvent.Delete()
+	if err != nil {
+		log.Fatalf("failed to delete event: %v", err)
+	}
+
+	if calendar.ID != "" {
+		err = calendar.Delete()
+		if err != nil {
+			log.Fatalf("failed to delete calendar: %v", err)
+		}
+	}
+
+	if group.ID != "" {
+		err = group.Delete()
+		if err != nil {
+			log.Fatalf("failed to delete calendar group: %v", err)
+		}
 	}
 }

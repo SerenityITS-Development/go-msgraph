@@ -30,7 +30,7 @@ func (c CalendarEvents) PrettySimpleString() string {
 
 // SortByStartDateTime sorts the array in this CalendarEvents instance
 func (c CalendarEvents) SortByStartDateTime() {
-	sort.Slice(c, func(i, j int) bool { return c[i].StartTime.Before(c[j].StartTime) })
+	sort.Slice(c, func(i, j int) bool { return c[i].StartTime.DateTime.Before(c[j].StartTime.DateTime) })
 }
 
 // GetCalendarEventsAtCertainTime returns a subset of CalendarEvents that either start or end
@@ -38,7 +38,7 @@ func (c CalendarEvents) SortByStartDateTime() {
 func (c CalendarEvents) GetCalendarEventsAtCertainTime(givenTime time.Time) CalendarEvents {
 	var events []CalendarEvent
 	for _, event := range c {
-		if event.StartTime.Equal(givenTime) || event.EndTime.Equal(givenTime) || (event.StartTime.Before(givenTime) && event.EndTime.After(givenTime)) {
+		if event.StartTime.DateTime.Equal(givenTime) || event.EndTime.DateTime.Equal(givenTime) || (event.StartTime.DateTime.Before(givenTime) && event.EndTime.DateTime.After(givenTime)) {
 			events = append(events, event)
 		}
 	}

@@ -131,6 +131,7 @@ var WinIANA = map[string]string{
 	"(UTC-01:00) Azores":                                            "Atlantic/Azores",
 	"(UTC-01:00) Cabo Verde Is.":                                    "Atlantic/Cape_Verde",
 	"(UTC) Co-ordinated Universal Time":                             "Etc/GMT",
+	"(UTC) Universal Time Coordinated":                              "UTC",
 	"(UTC) Coordinated Universal Time":                              "Etc/GMT",
 	"(UTC+00:00) Casablanca":                                        "Africa/Casablanca",
 	"(UTC+00:00) Dublin, Edinburgh, Lisbon, London":                 "Europe/London",
