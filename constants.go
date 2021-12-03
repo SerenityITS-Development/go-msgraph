@@ -79,5 +79,5 @@ var (
 	ErrNotGraphClientSourced = errors.New("instance is not created from a GraphClient API-Call, cannot directly get further information")
 	// ErrFindCalendarGroup is returned on any func that tries to find a calendar group with the given parameters that cannot be found
 	ErrFindCalendarGroup = errors.New("unable to find calendar group")
-
+	ErrFindCalendarEvent = errors.New("unable to find calendar event")
 )

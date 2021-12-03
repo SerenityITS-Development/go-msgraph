@@ -45,6 +45,16 @@ func (c CalendarEvents) GetCalendarEventsAtCertainTime(givenTime time.Time) Cale
 	return events
 }
 
+func (c CalendarEvents) FindEventByTransactionId(value string) (*CalendarEvent, error) {
+	var events []CalendarEvent
+	for _, event := range events {
+		if event.TransactionID == value {
+			return &event, nil
+		}
+	}
+	return nil, ErrFindCalendarEvent
+}
+
 // Equal returns true if the two CalendarEvent[] are equal. The order of the events doesn't matter
 func (c CalendarEvents) Equal(others CalendarEvents) bool {
 Outer:

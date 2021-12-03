@@ -119,15 +119,18 @@ func TestCalendar_CreateEvent(t *testing.T) {
 		log.Fatalf("failed to create calendar: %v", err)
 	}
 
+	log.Println(time.Now())
 	newEvent, err := calendar.CreateEvent(eventPost)
 	if err != nil {
 		log.Fatalf("failed to create event: %v", err)
 	}
+	log.Println(time.Now())
 
 	err = newEvent.Delete()
 	if err != nil {
 		log.Fatalf("failed to delete event: %v", err)
 	}
+	log.Println(time.Now())
 
 	if calendar.ID != "" {
 		err = calendar.Delete()
