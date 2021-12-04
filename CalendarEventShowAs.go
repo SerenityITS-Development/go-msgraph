@@ -9,18 +9,18 @@ type CalendarEventShowAs string
 
 //goland:noinspection SpellCheckingInspection
 const (
-	Free CalendarEventShowAs 	= "free"
-	Tentative		= "tentative"
-	Busy			= "busy"
-	OOTO			= "oof"
-	WorkingElsewhere = "workingElsewhere"
-	ShowCalendarAsUnknown			= "unknown"
+	ShowAsFree      CalendarEventShowAs = "free"
+	ShowAsTentative = "tentative"
+	ShowAsBusy       = "busy"
+	ShowAsOOTO              = "oof"
+	ShowAssWorkingElsewhere = "workingElsewhere"
+	ShowAsUnknown           = "unknown"
 )
 
 
 func (in CalendarEventShowAs) IsValid() error {
 	switch in {
-	case ShowCalendarAsUnknown, Free, Tentative, Busy, OOTO, WorkingElsewhere:
+	case ShowAsUnknown, ShowAsFree, ShowAsTentative, ShowAsBusy, ShowAsOOTO, ShowAssWorkingElsewhere:
 		return nil
 	}
 	return errors.New("invalid show as type")
@@ -32,7 +32,7 @@ func (in *CalendarEventShowAs) UnmarshalJSON(data []byte) error {
 	json.Unmarshal(data, &s)
 	out := CalendarEventShowAs(s)
 	switch out {
-	case ShowCalendarAsUnknown, Free, Tentative, Busy, OOTO, WorkingElsewhere:
+	case ShowAsUnknown, ShowAsFree, ShowAsTentative, ShowAsBusy, ShowAsOOTO, ShowAssWorkingElsewhere:
 		*in = out
 		return nil
 	}

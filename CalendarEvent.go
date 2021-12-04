@@ -19,7 +19,7 @@ type CalendarEvent struct {
 	OriginalStartTimeZone *time.Location   `json:"-"` // The original start-timezone, is already integrated in the calendartimes. Caution: is UTC on full day events
 	OriginalEndTimeZone   *time.Location   `json:"-"` // The original end-timezone, is already integrated in the calendartimes. Caution: is UTC on full day events
 	ICalUID               string `json:"iCalUId,omitempty"`
-	Importance            string    `json:"importance,omitempty"`
+	Importance            Importance    `json:"importance,omitempty"`
 	Sensitivity           Sensitivity  `json:"sensitivity,omitempty"`
 	IsAllDay              bool  `json:"isAllDay,omitempty"` // true = full day event, otherwise false
 	IsCancelled           bool    `json:"isCancelled,omitempty"` // calendar event has been cancelled but is still in the calendar
@@ -38,7 +38,7 @@ type CalendarEvent struct {
 	AllowNewTimeProposals 	bool `json:"allowNewTimeProposals,omitempty"`
 	BodyPreview				string `json:"bodyPreview,omitempty"`
 	Body					*struct {
-		ContentType			string `json:"contentType,omitempty"`
+		ContentType			ContentType `json:"contentType,omitempty"`
 		Content				string 	`json:"content,omitempty"`
 	} `json:"body,omitempty"`
 	Location				*CalendarLocation `json:"location,omitempty"`
@@ -126,7 +126,7 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 		OriginalEndTimeZone   string            `json:"originalEndTimeZone"`
 		ICalUID               string            `json:"iCalUId"`
 		Subject               string            `json:"subject"`
-		Importance            string            `json:"importance"`
+		Importance            Importance            `json:"importance"`
 		Sensitivity           Sensitivity            `json:"sensitivity"`
 		IsAllDay              bool              `json:"isAllDay"`
 		IsCancelled           bool              `json:"isCancelled"`
@@ -135,8 +135,6 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 		ShowAs                CalendarEventShowAs            `json:"showAs"`
 		Type                  string            `json:"type"`
 		ResponseStatus        ResponseStatus    `json:"responseStatus"`
-		//Start                 map[string]string `json:"start"`
-		//End                   map[string]string `json:"end"`
 		Start                 DateTimeTimeZone `json:"start"`
 		End                   DateTimeTimeZone `json:"end"`
 		Attendees             Attendees         `json:"attendees"`
@@ -148,7 +146,7 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 		HideAttendees			bool			`json:"hideAttendees"`
 		BodyPreview				string			`json:"bodyPreview"`
 		Body					struct {
-			ContentType			string			`json:"contentType"`
+			ContentType			ContentType			`json:"contentType"`
 			Content				string			`json:"content"`
 		}			`json:"body"`
 		CancelledOccurrences    []string		`json:"cancelledOccurrences"`
@@ -225,7 +223,7 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	c.BodyPreview = tmp.BodyPreview
 	c.HideAttendees = tmp.HideAttendees
 	c.Body = (*struct {
-		ContentType string `json:"contentType,omitempty"`
+		ContentType ContentType `json:"contentType,omitempty"`
 		Content     string `json:"content,omitempty"`
 	})(&tmp.Body)
 	/*
