@@ -81,10 +81,7 @@ func TestCalendar_ShareReadWith(t *testing.T) {
 
 func TestCalendar_CreateEvent(t *testing.T) {
 
-	duration, err := time.ParseDuration("1h")
-	if err != nil {
-		log.Fatalf("failed to parse duration: %v", err)
-	}
+	duration := 1 * time.Hour
 
 	attendees := Attendees{ {EmailAddress: EmailAddress{ Address: "taimana@outlook.com" }, Type: AttendeeRequired},
 		{EmailAddress: EmailAddress{ Address: "taimana.nospam@outlook.com" }, Type: AttendeeOptional} }
@@ -94,6 +91,7 @@ func TestCalendar_CreateEvent(t *testing.T) {
 		EndTime:               DateTimeTimeZone{}.NowAdd(duration),
 		Attendees:             &attendees,
 		AllowNewTimeProposals: false,
+		TransactionID:         "1",
 	}
 
 	client, err := NewGraphClient(
@@ -119,18 +117,27 @@ func TestCalendar_CreateEvent(t *testing.T) {
 		log.Fatalf("failed to create calendar: %v", err)
 	}
 
-	log.Println(time.Now())
 	newEvent, err := calendar.CreateEvent(eventPost)
 	if err != nil {
 		log.Fatalf("failed to create event: %v", err)
 	}
-	log.Println(time.Now())
+
+	endDuration := 10 * time.Hour
+	startDuration := -10 * time.Hour
+	eventsList, err := calendar.ListEvents(time.Now().Add(startDuration), time.Now().Add(endDuration))
+	if err != nil {
+		log.Fatalf("failed to list events: %v", err)
+	}
+
+	_, err = eventsList.FindEventByTransactionId("1")
+	if err != nil {
+		log.Fatalf("failed to find event: %v", err)
+	}
 
 	err = newEvent.Delete()
 	if err != nil {
 		log.Fatalf("failed to delete event: %v", err)
 	}
-	log.Println(time.Now())
 
 	if calendar.ID != "" {
 		err = calendar.Delete()

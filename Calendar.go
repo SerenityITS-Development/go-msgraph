@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // Calendar represents a single calendar of a user
@@ -94,6 +95,22 @@ func (c Calendar) Delete(opts ...DeleteQueryOption) error {
 	// TODO: check return body, maybe there is some potential success or error message hidden in it?
 	err := c.graphClient.makeDELETEAPICall(resource, compileDeleteQueryOptions(opts), nil)
 	return err
+}
+
+func (c Calendar) ListEvents(startDateTime, endDateTime time.Time, opts ...ListQueryOption) (CalendarEvents, error) {
+	if c.graphClient == nil {
+		return CalendarEvents{}, ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/calendars/%v/events", c.Owner.Address, c.ID)
+
+	// set GET-Params for start and end time
+	var reqOpt = compileListQueryOptions(opts)
+	reqOpt.queryValues.Add("startdatetime", startDateTime.Format("2006-01-02T00:00:00"))
+	reqOpt.queryValues.Add("enddatetime", endDateTime.Format("2006-01-02T00:00:00"))
+
+	var calendarEvents CalendarEvents
+	return calendarEvents, c.graphClient.makeGETAPICall(resource, reqOpt, &calendarEvents)
 }
 
 // UnmarshalJSON implements the json unmarshal to be used by the json-library
