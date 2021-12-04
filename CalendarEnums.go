@@ -77,7 +77,6 @@ const (
 	ImportanceHigh			 = "high"
 )
 
-
 func (in Importance) IsValid() error {
 	switch in {
 	case ImportanceLow, ImportanceNormal, ImportanceHigh:
@@ -105,7 +104,6 @@ const (
 	ContentTypeText ContentType = "text"
 	ContentTypeHtml		 = "html"
 )
-
 
 func (in ContentType) IsValid() error {
 	switch in {
