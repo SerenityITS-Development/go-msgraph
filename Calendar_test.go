@@ -56,7 +56,7 @@ func TestCalendar_ShareReadWith(t *testing.T) {
 		log.Fatalf("failed to create calendar: %v", err)
 	}
 
-	permission, err := calendar.ShareReadWith(EmailAddress{Address: "taimana@outlook.com"}, false, false, "read")
+	permission, err := calendar.ShareReadWith(EmailAddress{Address: "doesnoexst_email@outlook.com"}, false, false, "read")
 	if err != nil {
 		log.Fatalf("failed to share calendar: %v", err)
 	}
@@ -83,8 +83,8 @@ func TestCalendar_CreateEvent(t *testing.T) {
 
 	duration := 1 * time.Hour
 
-	attendees := Attendees{ {EmailAddress: EmailAddress{ Address: "taimana@outlook.com" }, Type: AttendeeRequired},
-		{EmailAddress: EmailAddress{ Address: "taimana.nospam@outlook.com" }, Type: AttendeeOptional} }
+	attendees := Attendees{ {EmailAddress: EmailAddress{ Address: "doesnotexist_email1@outlook.com" }, Type: AttendeeRequired},
+		{EmailAddress: EmailAddress{ Address: "doesnotexist_email2@outlook.com" }, Type: AttendeeOptional} }
 	eventPost := CalendarEvent{
 		Subject:               "Test",
 		StartTime:             DateTimeTimeZone{}.Now(),
