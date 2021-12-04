@@ -5,14 +5,51 @@ import (
 	"errors"
 )
 
+
+type EventResponseType string
+
+//goland:noinspection SpellCheckingInspection
+const (
+	EventResponseNone   EventResponseType = "none"
+	EventResponseOrganizer EventResponseType = "organizer"
+	EventResponseTentativelyAccepted    EventResponseType  = "tentativelyAccepted"
+	EventResponseAccepted EventResponseType = "accepted"
+	EventResponseDeclined EventResponseType = "declined"
+	EventResponseNotResponded EventResponseType = "notResponded"
+)
+
+
+func (in EventResponseType) IsValid() error {
+	switch in {
+	case EventResponseDeclined, EventResponseNone, EventResponseOrganizer,
+		EventResponseAccepted, EventResponseTentativelyAccepted, EventResponseNotResponded:
+		return nil
+	}
+	return errors.New("invalid EventResponseType type")
+}
+
+func (in *EventResponseType) UnmarshalJSON(data []byte) error {
+	var s string
+	//goland:noinspection GoUnhandledErrorResult
+	json.Unmarshal(data, &s)
+	out := EventResponseType(s)
+	switch out {
+	case EventResponseDeclined, EventResponseNone, EventResponseOrganizer,
+		EventResponseAccepted, EventResponseTentativelyAccepted, EventResponseNotResponded:
+		*in = out
+		return nil
+	}
+	return errors.New("invalid EventResponseType type")
+}
+
 type Sensitivity string
 
 //goland:noinspection SpellCheckingInspection
 const (
 	SensitivityNormal   Sensitivity = "normal"
-	SensitivityPersonal = "personal"
-	SensitivityPrivate      = "private"
-	SensitivityConfidential = "confidential"
+	SensitivityPersonal Sensitivity = "personal"
+	SensitivityPrivate    Sensitivity  = "private"
+	SensitivityConfidential Sensitivity = "confidential"
 )
 
 
@@ -42,9 +79,9 @@ type OnlineMeetingProvider string
 
 const (
 	OnlineProviderUnknown       OnlineMeetingProvider = "unknown"
-	OnlineProviderTeamsBusiness = "teamsForBusiness"
-	OnlineProviderSkypeBusiness = "skypeForBusiness"
-	OnlineProviderSkype         = "skypeForConsumer"
+	OnlineProviderTeamsBusiness OnlineMeetingProvider = "teamsForBusiness"
+	OnlineProviderSkypeBusiness OnlineMeetingProvider = "skypeForBusiness"
+	OnlineProviderSkype         OnlineMeetingProvider = "skypeForConsumer"
 )
 
 
@@ -73,8 +110,8 @@ type Importance string
 
 const (
 	ImportanceLow Importance = "low"
-	ImportanceNormal		 = "normal"
-	ImportanceHigh			 = "high"
+	ImportanceNormal Importance 		 = "normal"
+	ImportanceHigh	Importance 		 = "high"
 )
 
 func (in Importance) IsValid() error {
@@ -102,7 +139,7 @@ type ContentType string
 
 const (
 	ContentTypeText ContentType = "text"
-	ContentTypeHtml		 = "html"
+	ContentTypeHtml	ContentType	 = "html"
 )
 
 func (in ContentType) IsValid() error {

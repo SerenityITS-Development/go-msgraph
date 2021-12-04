@@ -47,7 +47,7 @@ func (c CalendarEvents) GetCalendarEventsAtCertainTime(givenTime time.Time) Cale
 
 func (c CalendarEvents) FindEventByTransactionId(value string) (*CalendarEvent, error) {
 	for _, event := range c {
-		if event.TransactionID == value {
+		if *event.TransactionID == value {
 			return &event, nil
 		}
 	}

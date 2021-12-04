@@ -9,6 +9,7 @@ import (
 func TestResponseStatus_Equal(t *testing.T) {
 
 	testTime := time.Now()
+	testTimeMinute := testTime.Add(time.Minute)
 	type args struct {
 		other ResponseStatus
 	}
@@ -20,18 +21,18 @@ func TestResponseStatus_Equal(t *testing.T) {
 	}{
 		{
 			name: "Equal",
-			s:    ResponseStatus{Response: "accepted", Time: testTime},
-			args: args{other: ResponseStatus{Response: "accepted", Time: testTime}},
+			s:    ResponseStatus{Response: &attendeeAccepted, Time: &testTime},
+			args: args{other: ResponseStatus{Response: &attendeeAccepted, Time: &testTime}},
 			want: true,
 		}, {
 			name: "non-equal response",
-			s:    ResponseStatus{Response: "declined", Time: testTime},
-			args: args{other: ResponseStatus{Response: "accepted", Time: testTime}},
+			s:    ResponseStatus{Response: &attendeeDeclined, Time: &testTime},
+			args: args{other: ResponseStatus{Response: &attendeeAccepted, Time: &testTime}},
 			want: false,
 		}, {
 			name: "non-equal time",
-			s:    ResponseStatus{Response: "accepted", Time: testTime.Add(time.Minute)},
-			args: args{other: ResponseStatus{Response: "accepted", Time: testTime}},
+			s:    ResponseStatus{Response: &attendeeAccepted, Time: &testTimeMinute},
+			args: args{other: ResponseStatus{Response: &attendeeAccepted, Time: &testTime}},
 			want: false,
 		},
 	}

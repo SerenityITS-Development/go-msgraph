@@ -36,7 +36,11 @@ func (s DateTimeTimeZone) NowAdd(duration time.Duration) DateTimeTimeZone {
 }
 
 func (s *DateTimeTimeZone) MarshalJSON() ([]byte, error) {
-	stringVal := fmt.Sprintf("{ \"dateTime\": %v, \"timeZone\": %v }", s.DateTime.Format("YYYY-MM-DDTHH:mm:ss"), s.TimeZone)
+
+	timezone, _ := globalSupportedTimeZones.GetTimeZoneByDisplayName(s.TimeZone)
+
+	stringVal := fmt.Sprintf("{ \"dateTime\": \"%v\", \"timeZone\": \"%v\" }",
+		s.DateTime.Format("2006-01-02T15:04:05"), timezone)
 	return []byte(stringVal), nil
 }
 

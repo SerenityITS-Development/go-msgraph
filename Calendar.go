@@ -64,22 +64,38 @@ func (c *Calendar) ShareReadWith(email EmailAddress, isInsideOrganization bool,
 	return calendarPermission, err
 }
 
-func (c Calendar) CreateEvent(event CalendarEvent, opts ...CreateQueryOption) (CalendarEvent, error) {
+func (c Calendar) CreateEvent(event CalendarEvent, opts ...CreateQueryOption) (*CalendarEvent, error) {
 	if c.graphClient == nil {
-		return CalendarEvent{}, ErrNotGraphClientSourced
+		return nil, ErrNotGraphClientSourced
+	}
+
+	user, err := c.graphClient.GetUser(c.Owner.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(globalSupportedTimeZones.Value) == 0 {
+		var err error
+		// TODO: this is a dirty fix, because opts could contain other things than a context, e.g. select
+		// parameters. This could produce unexpected outputs and therefore break the globalSupportedTimeZones variable.
+		globalSupportedTimeZones, err = user.getTimeZoneChoices(compileCreateQueryOptions(opts))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	resource := fmt.Sprintf("/users/%v/calendars/%v/events", c.Owner.Address, c.ID)
 	newEvent := CalendarEvent{graphClient: c.graphClient}
 	bodyBytes, err := json.Marshal(event)
 	if err != nil {
-		return newEvent, err
+		return &newEvent, err
 	}
+
 
 	reader := bytes.NewReader(bodyBytes)
 	err = c.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &newEvent)
 
-	return newEvent, err
+	return &newEvent, err
 }
 
 // Delete deletes this calendar instance for this user. Use with caution.
@@ -100,6 +116,21 @@ func (c Calendar) Delete(opts ...DeleteQueryOption) error {
 func (c Calendar) ListEvents(startDateTime, endDateTime time.Time, opts ...ListQueryOption) (CalendarEvents, error) {
 	if c.graphClient == nil {
 		return CalendarEvents{}, ErrNotGraphClientSourced
+	}
+
+	user, err := c.graphClient.GetUser(c.Owner.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(globalSupportedTimeZones.Value) == 0 {
+		var err error
+		// TODO: this is a dirty fix, because opts could contain other things than a context, e.g. select
+		// parameters. This could produce unexpected outputs and therefore break the globalSupportedTimeZones variable.
+		globalSupportedTimeZones, err = user.getTimeZoneChoices(compileListQueryOptions(opts))
+		if err != nil {
+			return CalendarEvents{}, err
+		}
 	}
 
 	resource := fmt.Sprintf("/users/%v/calendars/%v/events", c.Owner.Address, c.ID)

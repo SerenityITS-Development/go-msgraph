@@ -6,12 +6,16 @@ import (
 )
 
 var (
+	attendeeRequired = AttendeeRequired
+	attendeeAccepted = EventResponseAccepted
+	attendeeDeclined = EventResponseDeclined
+	attendeeTimeNow = time.Now()
 	// First Attendee used for the Unit tests
-	testAttendee1 = Attendee{ EmailAddress: EmailAddress{Name: "Testname", Address: "testname@contoso.com"}, Type: "attendee",
-		ResponseStatus: &ResponseStatus{Response: "accepted", Time: time.Now()}}
+	testAttendee1 = Attendee{ EmailAddress: &EmailAddress{Name: "Testname", Address: "testname@contoso.com"}, Type: &attendeeRequired,
+		ResponseStatus: &ResponseStatus{Response: &attendeeAccepted, Time: &attendeeTimeNow}}
 	// Second Attendee used for the Unit tests
-	testAttendee2 = Attendee{ EmailAddress: EmailAddress{Name: "Testuser", Address: "testuser@contoso.com"}, Type: "attendee",
-		ResponseStatus: &ResponseStatus{Response: "declined", Time: time.Now()}}
+	testAttendee2 = Attendee{ EmailAddress: &EmailAddress{Name: "Testuser", Address: "testuser@contoso.com"}, Type: &attendeeRequired,
+		ResponseStatus: &ResponseStatus{Response: &attendeeDeclined, Time: &attendeeTimeNow}}
 )
 
 func TestAttendee_Equal(t *testing.T) {

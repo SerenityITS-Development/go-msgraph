@@ -7,16 +7,16 @@ import (
 
 // CalendarLocation represents a location for CalendarEvent
 type CalendarLocation struct {
-	DisplayName				string `json:"displayName,omitempty"`
-	LocationType			string `json:"locationType,omitempty"`
-	LocationURI				string `json:"locationUri,omitempty"`
-	LocationEmailAddress	string `json:"LocationEmailAddress,omitempty"`
+	DisplayName				*string `json:"displayName,omitempty"`
+	LocationType			*string `json:"locationType,omitempty"`
+	LocationURI				*string `json:"locationUri,omitempty"`
+	LocationEmailAddress	*string `json:"LocationEmailAddress,omitempty"`
 	Address					*Address `json:"address,omitempty"`
 	Coordinates 			*OutlookCoordinates `json:"coordinates,omitempty"`
 }
 
 func (s CalendarLocation) String() string {
-	return fmt.Sprintf("CalendarLocation(DisplayName: %s, LocationType: %s, LocationURI: %s, LocationEmailAddress: %s, Address: %s, Coordinates: %s)",
+	return fmt.Sprintf("CalendarLocation(DisplayName: %v, LocationType: %v, LocationURI: %v, LocationEmailAddress: %v, Address: %s, Coordinates: %s)",
 		s.DisplayName, s.LocationType, s.LocationURI, s.LocationEmailAddress, s.Address.String(), s.Coordinates.String())
 }
 
@@ -30,10 +30,10 @@ func (s CalendarLocation) Equal(other CalendarLocation) bool {
 // UnmarshalJSON implements the json unmarshal to be used by the json-library
 func (s *CalendarLocation) UnmarshalJSON(data []byte) error {
 	tmp := struct {
-		DisplayName				string `json:"displayName,omitempty"`
-		LocationType			string `json:"locationType,omitempty"`
-		LocationURI				string `json:"locationUri,omitempty"`
-		LocationEmailAddress	string `json:"LocationEmailAddress,omitempty"`
+		DisplayName				*string `json:"displayName,omitempty"`
+		LocationType			*string `json:"locationType,omitempty"`
+		LocationURI				*string `json:"locationUri,omitempty"`
+		LocationEmailAddress	*string `json:"LocationEmailAddress,omitempty"`
 		Address					*Address `json:"address,omitempty"`
 		Coordinates 			*OutlookCoordinates `json:"coordinates,omitempty"`
 	}{}

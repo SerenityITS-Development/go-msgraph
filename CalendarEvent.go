@@ -2,6 +2,7 @@ package msgraph
 //@file: goland:noinspection SpellCheckingInspection
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,58 +11,58 @@ import (
 
 // CalendarEvent represents a single event within a calendar
 type CalendarEvent struct {
-	ID                    string  `json:"-"`
-	Subject               string   `json:"subject,omitempty"`
-	StartTime             DateTimeTimeZone   `json:"start,omitempty"`
-	EndTime               DateTimeTimeZone    `json:"end,omitempty"` // endtime of the event, correct timezone is set
+	ID                    *string  `json:"id,omitempty"`
+	Subject               *string   `json:"subject,omitempty"`
+	StartTime             *DateTimeTimeZone   `json:"start,omitempty"`
+	EndTime               *DateTimeTimeZone    `json:"end,omitempty"` // endtime of the event, correct timezone is set
 	CreatedDateTime       *time.Time    `json:"-"` // Creation time of the CalendarEvent, has the correct timezone set from OriginalStartTimeZone (json)
 	LastModifiedDateTime  *time.Time       `json:"-"` // Last modified time of the CalendarEvent, has the correct timezone set from OriginalEndTimeZone (json)
 	OriginalStartTimeZone *time.Location   `json:"-"` // The original start-timezone, is already integrated in the calendartimes. Caution: is UTC on full day events
 	OriginalEndTimeZone   *time.Location   `json:"-"` // The original end-timezone, is already integrated in the calendartimes. Caution: is UTC on full day events
-	ICalUID               string `json:"iCalUId,omitempty"`
-	Importance            Importance    `json:"importance,omitempty"`
-	Sensitivity           Sensitivity  `json:"sensitivity,omitempty"`
-	IsAllDay              bool  `json:"isAllDay,omitempty"` // true = full day event, otherwise false
-	IsCancelled           bool    `json:"isCancelled,omitempty"` // calendar event has been cancelled but is still in the calendar
-	IsOrganizer           bool    `json:"isOrganizer,omitempty"` // true if the calendar owner is the organizer
-	SeriesMasterID        string  `json:"seriesMasterId,omitempty"` // the ID of the master-entry of this series-event if any
-	Type                  string `json:"type,omitempty"`
+	ICalUID               *string `json:"iCalUId,omitempty"`
+	Importance            *Importance    `json:"importance,omitempty"`
+	Sensitivity           *Sensitivity  `json:"sensitivity,omitempty"`
+	IsAllDay              *bool  `json:"isAllDay,omitempty"` // true = full day event, otherwise false
+	IsCancelled           *bool    `json:"isCancelled,omitempty"` // calendar event has been cancelled but is still in the calendar
+	IsOrganizer           *bool    `json:"isOrganizer,omitempty"` // true if the calendar owner is the organizer
+	SeriesMasterID        *string  `json:"seriesMasterId,omitempty"` // the ID of the master-entry of this series-event if any
+	Type                  *string `json:"type,omitempty"`
 	ResponseStatus        *ResponseStatus `json:"responseStatus,omitempty"` // how the calendar-owner responded to the event (normally "organizer" because support-calendar is the host)
 
 	Attendees      *Attendees  `json:"attendees,omitempty"` // represents all attendees to this CalendarEvent
 	Organizer      *struct {
-		EmailAddress EmailAddress `json:"emailAddress,omitempty"`
+		EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
 	} `json:"organizer,omitempty"`
 
 	graphClient *GraphClient
 
-	AllowNewTimeProposals 	bool `json:"allowNewTimeProposals,omitempty"`
-	BodyPreview				string `json:"bodyPreview,omitempty"`
+	AllowNewTimeProposals 	*bool `json:"allowNewTimeProposals,omitempty"`
+	BodyPreview				*string `json:"bodyPreview,omitempty"`
 	Body					*struct {
-		ContentType			ContentType `json:"contentType,omitempty"`
-		Content				string 	`json:"content,omitempty"`
+		ContentType			*ContentType `json:"contentType,omitempty"`
+		Content				*string 	`json:"content,omitempty"`
 	} `json:"body,omitempty"`
 	Location				*CalendarLocation `json:"location,omitempty"`
 	Locations				*[]CalendarLocation `json:"locations,omitempty"`
-	HideAttendees			bool `json:"hideAttendees,omitempty"`
-	CancelledOccurrences    []string `json:"cancelledOccurrences,omitempty"`
-	Categories			    []string `json:"categories,omitempty"`
-	ChangeKey				string `json:"-"`
-	ExceptionOccurrences    []string `json:"-"`
-	HasAttachments			bool `json:"hasAttachments,omitempty"`
-	IsDraft					bool `json:"isDraft,omitempty"`
-	IsOnlineMeeting			bool `json:"isOnlineMeeting,omitempty"`
-	IsReminderOn			bool `json:"isReminderOn,omitempty"`
-	OccurrenceID			string 	`json:"occurrenceId,omitempty"`
+	HideAttendees			*bool `json:"hideAttendees,omitempty"`
+	CancelledOccurrences    *[]string `json:"cancelledOccurrences,omitempty"`
+	Categories			    *[]string `json:"categories,omitempty"`
+	ChangeKey				*string `json:"-"`
+	ExceptionOccurrences    *[]string `json:"-"`
+	HasAttachments			*bool `json:"hasAttachments,omitempty"`
+	IsDraft					*bool `json:"isDraft,omitempty"`
+	IsOnlineMeeting			*bool `json:"isOnlineMeeting,omitempty"`
+	IsReminderOn			*bool `json:"isReminderOn,omitempty"`
+	OccurrenceID			*string 	`json:"occurrenceId,omitempty"`
 	OnlineMeetingInfo		*OnlineMeetingInfo `json:"onlineMeetingInfo,omitempty"`
 	OnlineMeetingProvider	*OnlineMeetingProvider `json:"onlineMeetingProvider,omitempty"`
-	OnlineMeetingURL		string `json:"onlineMeetingUrl,omitempty"`
-	ReminderMinutesBeforeStart	int32  `json:"reminderMinutesBeforeStart,omitempty"`
-	ResponseRequested		bool `json:"responseRequested,omitempty"`
-	ShowAs					CalendarEventShowAs  `json:"showAs,omitempty"`
-	TransactionID			string `json:"TransactionId,omitempty"`
-	UUID					string `json:"uuid,omitempty"`
-	WebLink					string `json:"webLink,omitempty"`
+	OnlineMeetingURL		*string `json:"onlineMeetingUrl,omitempty"`
+	ReminderMinutesBeforeStart	*int32  `json:"reminderMinutesBeforeStart,omitempty"`
+	ResponseRequested		*bool `json:"responseRequested,omitempty"`
+	ShowAs					*CalendarEventShowAs  `json:"showAs,omitempty"`
+	TransactionID			*string `json:"TransactionId,omitempty"`
+	UUID					*string `json:"uuid,omitempty"`
+	WebLink					*string `json:"webLink,omitempty"`
 	Recurrence				*PatternedRecurrence `json:"recurrence,omitempty"`
 }
 
@@ -69,12 +70,12 @@ type CalendarEvent struct {
 // If none is found then an Attendee with the Name of "None" will be returned.
 func (c CalendarEvent) GetFirstAttendee() Attendee {
 	for _, attendee := range *c.Attendees {
-		if !attendee.EmailAddress.Equal(c.Organizer.EmailAddress) {
+		if !attendee.EmailAddress.Equal(*c.Organizer.EmailAddress) {
 			return attendee
 		}
 	}
 
-	return Attendee{ EmailAddress: EmailAddress{ Name: "None", Address: "None"}}
+	return Attendee{ EmailAddress: &EmailAddress{ Name: "None", Address: "None"}}
 }
 
 func (c CalendarEvent) String() string {
@@ -94,12 +95,30 @@ func (c CalendarEvent) PrettySimpleString() string {
 	return fmt.Sprintf("{ %v (%v) [%v - %v] }", c.Subject, c.GetFirstAttendee().EmailAddress.Name, c.StartTime, c.EndTime)
 }
 
+func (c *CalendarEvent) Update(opts ... UpdateQueryOption) error {
+	if c.graphClient == nil {
+		return ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/events/%v", c.Organizer.EmailAddress.Address, *c.ID)
+
+	bodyBytes, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+	reader := bytes.NewReader(bodyBytes)
+
+	// TODO: check return body, maybe there is some potential success or error message hidden in it?
+	err = c.graphClient.makePATCHAPICall(resource, compileUpdateQueryOptions(opts), reader, nil)
+	return err
+}
+
 func (c CalendarEvent) Delete(opts ...DeleteQueryOption) error {
 	if c.graphClient == nil {
 		return ErrNotGraphClientSourced
 	}
 
-	resource := fmt.Sprintf("/users/%v/events/%v", c.Organizer.EmailAddress.Address, c.ID)
+	resource := fmt.Sprintf("/users/%v/events/%v", c.Organizer.EmailAddress.Address, *c.ID)
 
 	// TODO: check return body, maybe there is some potential success or error message hidden in it?
 	err := c.graphClient.makeDELETEAPICall(resource, compileDeleteQueryOptions(opts), nil)
@@ -112,63 +131,63 @@ func (c CalendarEvent) Equal(other CalendarEvent) bool {
 		c.ICalUID == other.ICalUID && c.Subject == other.Subject && c.Importance == other.Importance && c.Sensitivity == other.Sensitivity &&
 		c.IsAllDay == other.IsAllDay && c.IsCancelled == other.IsCancelled && c.IsOrganizer == other.IsOrganizer &&
 		c.SeriesMasterID == other.SeriesMasterID && c.ShowAs == other.ShowAs && c.Type == other.Type && c.ResponseStatus.Equal(*other.ResponseStatus) &&
-		c.StartTime.Equal(other.StartTime) && c.EndTime.Equal(other.EndTime) &&
-		c.Attendees.Equal(*other.Attendees) && c.Organizer.EmailAddress.Equal(other.Organizer.EmailAddress)
+		c.StartTime.Equal(*other.StartTime) && c.EndTime.Equal(*other.EndTime) &&
+		c.Attendees.Equal(*other.Attendees) && c.Organizer.EmailAddress.Equal(*other.Organizer.EmailAddress)
 }
 
 // UnmarshalJSON implements the json unmarshal to be used by the json-library
 func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	tmp := struct {
-		ID                    string            `json:"id"`
-		CreatedDateTime       string            `json:"createdDateTime"`
-		LastModifiedDateTime  string            `json:"lastModifiedDateTime"`
-		OriginalStartTimeZone string            `json:"originalStartTimeZone"`
-		OriginalEndTimeZone   string            `json:"originalEndTimeZone"`
-		ICalUID               string            `json:"iCalUId"`
-		Subject               string            `json:"subject"`
-		Importance            Importance            `json:"importance"`
-		Sensitivity           Sensitivity            `json:"sensitivity"`
-		IsAllDay              bool              `json:"isAllDay"`
-		IsCancelled           bool              `json:"isCancelled"`
-		IsOrganizer           bool              `json:"isOrganizer"`
-		SeriesMasterID        string            `json:"seriesMasterId"`
-		ShowAs                CalendarEventShowAs            `json:"showAs"`
-		Type                  string            `json:"type"`
-		ResponseStatus        ResponseStatus    `json:"responseStatus"`
-		Start                 DateTimeTimeZone `json:"start"`
-		End                   DateTimeTimeZone `json:"end"`
-		Attendees             Attendees         `json:"attendees"`
-		Organizer             struct {
-			EmailAddress EmailAddress `json:"emailAddress"`
-		} `json:"organizer"`
+		ID                    *string            `json:"id,omitempty"`
+		CreatedDateTime       *string            `json:"createdDateTime,omitempty"`
+		LastModifiedDateTime  *string            `json:"lastModifiedDateTime,omitempty"`
+		OriginalStartTimeZone *string            `json:"originalStartTimeZone,omitempty"`
+		OriginalEndTimeZone   *string            `json:"originalEndTimeZone,omitempty"`
+		ICalUID               *string            `json:"iCalUId,omitempty"`
+		Subject               *string            `json:"subject,omitempty"`
+		Importance            *Importance            `json:"importance,omitempty"`
+		Sensitivity           *Sensitivity            `json:"sensitivity,omitempty"`
+		IsAllDay              *bool              `json:"isAllDay,omitempty"`
+		IsCancelled           *bool              `json:"isCancelled,omitempty"`
+		IsOrganizer           *bool              `json:"isOrganizer,omitempty"`
+		SeriesMasterID        *string            `json:"seriesMasterId,omitempty"`
+		ShowAs                *CalendarEventShowAs            `json:"showAs,omitempty"`
+		Type                  *string            `json:"type,omitempty"`
+		ResponseStatus        *ResponseStatus    `json:"responseStatus,omitempty"`
+		Start                 *DateTimeTimeZone `json:"start,omitempty"`
+		End                   *DateTimeTimeZone `json:"end,omitempty"`
+		Attendees             *Attendees         `json:"attendees,omitempty"`
+		Organizer             *struct {
+			EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
+		} `json:"organizer,omitempty"`
 
-		AllowNewTimeProposals bool				`json:"allowNewTimeProposals"`
-		HideAttendees			bool			`json:"hideAttendees"`
-		BodyPreview				string			`json:"bodyPreview"`
-		Body					struct {
-			ContentType			ContentType			`json:"contentType"`
-			Content				string			`json:"content"`
-		}			`json:"body"`
-		CancelledOccurrences    []string		`json:"cancelledOccurrences"`
-		Categories			    []string		`json:"categories"`
-		ChangeKey				string			`json:"changeKey"`
-		ExceptionOccurrences    []string		`json:"exceptionOccurrences"`
-		HasAttachments			bool			`json:"hasAttachments"`
-		IsDraft					bool			`json:"isDraft"`
-		IsOnlineMeeting			bool			`json:"isOnlineMeeting"`
-		IsReminderOn			bool			`json:"isReminderOn"`
-		OccurrenceID			string			`json:"occurrenceId"`
-		OnlineMeetingInfo		OnlineMeetingInfo	`json:"onlineMeetingInfo"`
-		OnlineMeetingProvider	OnlineMeetingProvider `json:"onlineMeetingProvider"`
-		OnlineMeetingURL			string			`json:"onlineMeetingUrl"`
-		ReminderMinutesBeforeStart	int32  `json:"reminderMinutesBeforeStart"`
-		ResponseRequested		bool  `json:"responseRequested"`
-		TransactionID			string  `json:"TransactionId"`
-		UUID					string  `json:"uuid"`
-		WebLink					string  `json:"webLink"`
-		Recurrence				PatternedRecurrence `json:"recurrence"`
-		Location				CalendarLocation `json:"location"`
-		Locations				[]CalendarLocation `json:"locations"`
+		AllowNewTimeProposals *bool				`json:"allowNewTimeProposals,omitempty"`
+		HideAttendees			*bool			`json:"hideAttendees,omitempty"`
+		BodyPreview				*string			`json:"bodyPreview,omitempty"`
+		Body					*struct {
+			ContentType			*ContentType			`json:"contentType,omitempty"`
+			Content				*string			`json:"content,omitempty"`
+		}			`json:"body,omitempty"`
+		CancelledOccurrences    *[]string		`json:"cancelledOccurrences,omitempty"`
+		Categories			    *[]string		`json:"categories,omitempty"`
+		ChangeKey				*string			`json:"changeKey,omitempty"`
+		ExceptionOccurrences    *[]string		`json:"exceptionOccurrences,omitempty"`
+		HasAttachments			*bool			`json:"hasAttachments,omitempty"`
+		IsDraft					*bool			`json:"isDraft,omitempty"`
+		IsOnlineMeeting			*bool			`json:"isOnlineMeeting,omitempty"`
+		IsReminderOn			*bool			`json:"isReminderOn,omitempty"`
+		OccurrenceID			*string			`json:"occurrenceId,omitempty"`
+		OnlineMeetingInfo		*OnlineMeetingInfo	`json:"onlineMeetingInfo,omitempty"`
+		OnlineMeetingProvider	*OnlineMeetingProvider `json:"onlineMeetingProvider,omitempty"`
+		OnlineMeetingURL			*string			`json:"onlineMeetingUrl,omitempty"`
+		ReminderMinutesBeforeStart	*int32  `json:"reminderMinutesBeforeStart,omitempty"`
+		ResponseRequested		*bool  `json:"responseRequested,omitempty"`
+		TransactionID			*string  `json:"TransactionId,omitempty"`
+		UUID					*string  `json:"uuid,omitempty"`
+		WebLink					*string  `json:"webLink,omitempty"`
+		Recurrence				*PatternedRecurrence `json:"recurrence,omitempty"`
+		Location				*CalendarLocation `json:"location,omitempty"`
+		Locations				*[]CalendarLocation `json:"locations,omitempty"`
 	}{}
 
 
@@ -180,11 +199,11 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 
 	c.ID = tmp.ID
 
-	created, err := time.Parse(time.RFC3339Nano, tmp.CreatedDateTime)
+	created, err := time.Parse(time.RFC3339Nano, *tmp.CreatedDateTime)
 	if err != nil {
 		return fmt.Errorf("cannot time.Parse with RFC3339Nano createdDateTime %v: %v", tmp.CreatedDateTime, err)
 	}
-	modified, err := time.Parse(time.RFC3339Nano, tmp.LastModifiedDateTime)
+	modified, err := time.Parse(time.RFC3339Nano, *tmp.LastModifiedDateTime)
 	if err != nil {
 		return fmt.Errorf("cannot time.Parse with RFC3339Nano lastModifiedDateTime %v: %v", tmp.LastModifiedDateTime, err)
 	}
@@ -192,11 +211,11 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	c.CreatedDateTime = &created
 	c.LastModifiedDateTime = &modified
 
-	c.OriginalStartTimeZone, err = mapTimeZoneStrings(tmp.OriginalStartTimeZone)
+	c.OriginalStartTimeZone, err = mapTimeZoneStrings(*tmp.OriginalStartTimeZone)
 	if err != nil {
 		return fmt.Errorf("cannot time.LoadLocation originalStartTimeZone %v: %v", tmp.OriginalStartTimeZone, err)
 	}
-	c.OriginalEndTimeZone, err = mapTimeZoneStrings(tmp.OriginalEndTimeZone)
+	c.OriginalEndTimeZone, err = mapTimeZoneStrings(*tmp.OriginalEndTimeZone)
 	if err != nil {
 		return fmt.Errorf("cannot time.LoadLocation originalEndTimeZone %v: %v", tmp.OriginalEndTimeZone, err)
 	}
@@ -210,22 +229,16 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	c.SeriesMasterID = tmp.SeriesMasterID
 	c.ShowAs = tmp.ShowAs
 	c.Type = tmp.Type
-	c.ResponseStatus = &tmp.ResponseStatus
+	c.ResponseStatus = tmp.ResponseStatus
 	if tmp.Attendees != nil {
-		c.Attendees = &tmp.Attendees
+		c.Attendees = tmp.Attendees
 	}
 
-
-	c.Organizer = (*struct {
-		EmailAddress EmailAddress `json:"emailAddress,omitempty"`
-	})(&tmp.Organizer)
+	c.Organizer = tmp.Organizer
 	c.AllowNewTimeProposals = tmp.AllowNewTimeProposals
 	c.BodyPreview = tmp.BodyPreview
 	c.HideAttendees = tmp.HideAttendees
-	c.Body = (*struct {
-		ContentType ContentType `json:"contentType,omitempty"`
-		Content     string `json:"content,omitempty"`
-	})(&tmp.Body)
+	c.Body = tmp.Body
 	/*
 	c.StartTime, err = time.Parse(time.RFC3339Nano, tmp.Start)
 	if err != nil {
@@ -246,8 +259,8 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	c.IsOnlineMeeting = tmp.IsOnlineMeeting
 	c.IsReminderOn = tmp.IsReminderOn
 	c.OccurrenceID = tmp.OccurrenceID
-	c.OnlineMeetingInfo = &tmp.OnlineMeetingInfo
-	c.OnlineMeetingProvider = &tmp.OnlineMeetingProvider
+	c.OnlineMeetingInfo = tmp.OnlineMeetingInfo
+	c.OnlineMeetingProvider = tmp.OnlineMeetingProvider
 	c.OnlineMeetingURL = tmp.OnlineMeetingURL
 	c.ReminderMinutesBeforeStart = tmp.ReminderMinutesBeforeStart
 	c.ResponseRequested = tmp.ResponseRequested
@@ -255,9 +268,9 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	c.TransactionID = tmp.TransactionID
 	c.UUID = tmp.UUID
 	c.WebLink = tmp.WebLink
-	c.Recurrence = &tmp.Recurrence
-	c.Locations = &tmp.Locations
-	c.Location = &tmp.Location
+	c.Recurrence = tmp.Recurrence
+	c.Locations = tmp.Locations
+	c.Location = tmp.Location
 	c.StartTime = tmp.Start
 	c.EndTime = tmp.End
 
@@ -284,7 +297,7 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	// Now check if it's a full-day event, if yes, the event is UTC anyway. We need it to be accurate for the program to work
 	// hence we set it to time.Local. It can later be manipulated by the program to a different timezone but the times also have
 	// to be recalculated. E.g. we set it to UTC+2 hence it will start at 02:00 and end at 02:00, not 00:00 -> manually set to 00:00
-	if c.IsAllDay && FullDayEventTimeZone != time.UTC {
+	if *c.IsAllDay && FullDayEventTimeZone != time.UTC {
 		// set to local location
 		c.StartTime.DateTime = c.StartTime.DateTime.In(FullDayEventTimeZone)
 		c.StartTime.TimeZone = FullDayEventTimeZone.String()

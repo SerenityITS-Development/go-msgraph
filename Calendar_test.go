@@ -82,16 +82,23 @@ func TestCalendar_ShareReadWith(t *testing.T) {
 func TestCalendar_CreateEvent(t *testing.T) {
 
 	duration := 1 * time.Hour
+	testString := "Test"
+	nowTime := DateTimeTimeZone{}.Now()
+	endTime := DateTimeTimeZone{}.NowAdd(duration)
+	falseValue := false
+	transactionId := "1"
+	required := AttendeeRequired
+	optional := AttendeeOptional
 
-	attendees := Attendees{ {EmailAddress: EmailAddress{ Address: "doesnotexist_email1@outlook.com" }, Type: AttendeeRequired},
-		{EmailAddress: EmailAddress{ Address: "doesnotexist_email2@outlook.com" }, Type: AttendeeOptional} }
+	attendees := Attendees{ {EmailAddress: &EmailAddress{ Address: "doesnotexist_email1@outlook.com" }, Type: &required},
+		{EmailAddress: &EmailAddress{ Address: "doesnotexist_email2@outlook.com" }, Type: &optional} }
 	eventPost := CalendarEvent{
-		Subject:               "Test",
-		StartTime:             DateTimeTimeZone{}.Now(),
-		EndTime:               DateTimeTimeZone{}.NowAdd(duration),
+		Subject:               &testString,
+		StartTime:             &nowTime,
+		EndTime:               &endTime,
 		Attendees:             &attendees,
-		AllowNewTimeProposals: false,
-		TransactionID:         "1",
+		AllowNewTimeProposals: &falseValue,
+		TransactionID:         &transactionId,
 	}
 
 	client, err := NewGraphClient(
@@ -114,29 +121,111 @@ func TestCalendar_CreateEvent(t *testing.T) {
 
 	calendar, err := group.CreateCalendar("Event Calendar")
 	if err != nil {
-		log.Fatalf("failed to create calendar: %v", err)
+		err2 := err
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to create calendar: %v", err2)
 	}
 
 	newEvent, err := calendar.CreateEvent(eventPost)
 	if err != nil {
-		log.Fatalf("failed to create event: %v", err)
+		err2 := err
+		if calendar.ID != "" {
+			err = calendar.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar: %v", err)
+			}
+		}
+
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to create event: %v", err2)
 	}
 
 	endDuration := 10 * time.Hour
 	startDuration := -10 * time.Hour
 	eventsList, err := calendar.ListEvents(time.Now().Add(startDuration), time.Now().Add(endDuration))
 	if err != nil {
-		log.Fatalf("failed to list events: %v", err)
+		err2 := err
+		if calendar.ID != "" {
+			err = calendar.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar: %v", err)
+			}
+		}
+
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to list events: %v", err2)
 	}
 
 	_, err = eventsList.FindEventByTransactionId("1")
 	if err != nil {
-		log.Fatalf("failed to find event: %v", err)
+		err2 := err
+		if calendar.ID != "" {
+			err = calendar.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar: %v", err)
+			}
+		}
+
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to find event: %v", err2)
+	}
+
+	err = newEvent.Update()
+	if err != nil {
+		err2 := err
+		if calendar.ID != "" {
+			err = calendar.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar: %v", err)
+			}
+		}
+
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to update event: %v", err2)
 	}
 
 	err = newEvent.Delete()
 	if err != nil {
-		log.Fatalf("failed to delete event: %v", err)
+		err2 := err
+		if calendar.ID != "" {
+			err = calendar.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar: %v", err)
+			}
+		}
+
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to delete event: %v", err2)
 	}
 
 	if calendar.ID != "" {

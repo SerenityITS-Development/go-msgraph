@@ -8,19 +8,18 @@ import (
 
 // Attendee struct represents an attendee for a CalendarEvent
 type Attendee struct {
-	Type           AttendeeType   `json:"type,omitempty"`
+	Type           *AttendeeType   `json:"type,omitempty"`
 	ResponseStatus *ResponseStatus `json:"status,omitempty"`
 	ProposedNewTime *TimeSlot `json:"proposedNewTime,omitempty"`
-	EmailAddress    EmailAddress `json:"emailAddress,omitempty"`
-	Required		bool  `json:"required,omitempty"`
+	EmailAddress    *EmailAddress `json:"emailAddress,omitempty"`
 }
 
 type AttendeeType string
 
 const (
 	AttendeeRequired AttendeeType = "required"
-	AttendeeOptional              = "optional"
-	AttendeeIsResource              = "resource"
+	AttendeeOptional AttendeeType = "optional"
+	AttendeeIsResource AttendeeType = "resource"
 )
 
 
@@ -46,7 +45,7 @@ func (in *AttendeeType) UnmarshalJSON(data []byte) error {
 }
 
 func (a Attendee) String() string {
-	return fmt.Sprintf("Type: %s, E-mail: %s, ResponseStatus: %v, TimeSlot: %s",
+	return fmt.Sprintf("Type: %v, E-mail: %s, ResponseStatus: %v, TimeSlot: %s",
 		a.Type, a.EmailAddress.String(), a.ResponseStatus, a.ProposedNewTime.String())
 }
 
@@ -59,10 +58,10 @@ func (a Attendee) Equal(other Attendee) bool {
 // UnmarshalJSON implements the json unmarshal to be used by the json-library
 func (a *Attendee) UnmarshalJSON(data []byte) error {
 	tmp := struct {
-		Type         AttendeeType         `json:"type,omitempty"`
-		Status       ResponseStatus `json:"status,omitempty"`
-		EmailAddress    EmailAddress `json:"emailAddress,omitempty"`
-		ProposedNewTime TimeSlot     `json:"proposedNewTime,omitempty"`
+		Type         *AttendeeType         `json:"type,omitempty"`
+		Status       *ResponseStatus `json:"status,omitempty"`
+		EmailAddress    *EmailAddress `json:"emailAddress,omitempty"`
+		ProposedNewTime *TimeSlot     `json:"proposedNewTime,omitempty"`
 	}{}
 
 	err := json.Unmarshal(data, &tmp)
@@ -72,8 +71,8 @@ func (a *Attendee) UnmarshalJSON(data []byte) error {
 
 	a.Type = tmp.Type
 	a.EmailAddress = tmp.EmailAddress
-	a.ResponseStatus = &tmp.Status
-	a.ProposedNewTime = &tmp.ProposedNewTime
+	a.ResponseStatus = tmp.Status
+	a.ProposedNewTime = tmp.ProposedNewTime
 
 	return nil
 }
