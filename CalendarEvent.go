@@ -288,27 +288,37 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 
 	 */
 
+	originalStartTimeIn := c.StartTime.DateTime.In(c.OriginalStartTimeZone)
+	originalEndTimeIn := c.EndTime.DateTime.In(c.OriginalEndTimeZone)
+	originalStartTimeZoneString := c.OriginalStartTimeZone.String()
+	originalEndTimeZoneString := c.OriginalEndTimeZone.String()
 	// Hint: OriginalStartTimeZone & end are UTC (set by microsoft) if it is a full-day event, this will be handled in the next section
-	c.StartTime.DateTime = c.StartTime.DateTime.In(c.OriginalStartTimeZone) // move the StartTime to the orignal start-timezone
-	c.StartTime.TimeZone = c.OriginalStartTimeZone.String()
-	c.EndTime.DateTime = c.EndTime.DateTime.In(c.OriginalEndTimeZone)       // move the EndTime to the orignal end-timezone
-	c.EndTime.TimeZone = c.OriginalEndTimeZone.String()
+	c.StartTime.DateTime = &originalStartTimeIn // move the StartTime to the orignal start-timezone
+	c.StartTime.TimeZone = &originalStartTimeZoneString
+	c.EndTime.DateTime = &originalEndTimeIn      // move the EndTime to the orignal end-timezone
+	c.EndTime.TimeZone = &originalEndTimeZoneString
 
 	// Now check if it's a full-day event, if yes, the event is UTC anyway. We need it to be accurate for the program to work
 	// hence we set it to time.Local. It can later be manipulated by the program to a different timezone but the times also have
 	// to be recalculated. E.g. we set it to UTC+2 hence it will start at 02:00 and end at 02:00, not 00:00 -> manually set to 00:00
 	if *c.IsAllDay && FullDayEventTimeZone != time.UTC {
 		// set to local location
-		c.StartTime.DateTime = c.StartTime.DateTime.In(FullDayEventTimeZone)
-		c.StartTime.TimeZone = FullDayEventTimeZone.String()
-		c.EndTime.DateTime = c.EndTime.DateTime.In(FullDayEventTimeZone)
-		c.EndTime.TimeZone = FullDayEventTimeZone.String()
+		fullStartTimeIn := c.StartTime.DateTime.In(FullDayEventTimeZone)
+		fullEndTimeIn := c.EndTime.DateTime.In(FullDayEventTimeZone)
+		fullStartTimeZoneString := FullDayEventTimeZone.String()
+		fullEndTimeZoneString := FullDayEventTimeZone.String()
+		c.StartTime.DateTime = &fullStartTimeIn
+		c.StartTime.TimeZone = &fullStartTimeZoneString
+		c.EndTime.DateTime = &fullEndTimeIn
+		c.EndTime.TimeZone = &fullEndTimeZoneString
 		// get offset in seconds
 		_, startOffSet := c.StartTime.DateTime.Zone()
 		_, endOffSet := c.EndTime.DateTime.Zone()
 		// decrease time to 00:00 again
-		c.StartTime.DateTime = c.StartTime.DateTime.Add(-1 * time.Second * time.Duration(startOffSet))
-		c.EndTime.DateTime = c.EndTime.DateTime.Add(-1 * time.Second * time.Duration(endOffSet))
+		fullStartTimeAdd := c.StartTime.DateTime.Add(-1 * time.Second * time.Duration(startOffSet))
+		fullEndTimeAdd := c.EndTime.DateTime.Add(-1 * time.Second * time.Duration(endOffSet))
+		c.StartTime.DateTime = &fullStartTimeAdd
+		c.EndTime.DateTime = &fullEndTimeAdd
 	}
 
 	return nil

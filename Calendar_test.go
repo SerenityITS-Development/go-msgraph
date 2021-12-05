@@ -94,8 +94,8 @@ func TestCalendar_CreateEvent(t *testing.T) {
 		{EmailAddress: &EmailAddress{ Address: "doesnotexist_email2@outlook.com" }, Type: &optional} }
 	eventPost := CalendarEvent{
 		Subject:               &testString,
-		StartTime:             &nowTime,
-		EndTime:               &endTime,
+		StartTime:             nowTime,
+		EndTime:               endTime,
 		Attendees:             &attendees,
 		AllowNewTimeProposals: &falseValue,
 		TransactionID:         &transactionId,
