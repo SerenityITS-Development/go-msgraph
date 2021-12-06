@@ -63,3 +63,15 @@ func TestAttendees_Equal(t *testing.T) {
 		})
 	}
 }
+
+func TestAttendees_FindByEmail(t *testing.T) {
+	attendees := Attendees{
+		testAttendee1,
+		testAttendee2,
+	}
+
+	_, err := attendees.FindByEmail(testAttendee1.EmailAddress.Address)
+	if err != nil {
+		t.Errorf("Attendees.FindByEmail() failed to find")
+	}
+}

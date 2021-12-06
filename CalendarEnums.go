@@ -164,6 +164,37 @@ func (in *ContentType) UnmarshalJSON(data []byte) error {
 }
 
 
+type AttendeeType string
+
+const (
+	AttendeeRequired AttendeeType = "required"
+	AttendeeOptional AttendeeType = "optional"
+	AttendeeIsResource AttendeeType = "resource"
+)
+
+
+func (in AttendeeType) IsValid() error {
+	switch in {
+	case AttendeeRequired, AttendeeOptional, AttendeeIsResource:
+		return nil
+	}
+	return errors.New("invalid Attendee type")
+}
+
+func (in *AttendeeType) UnmarshalJSON(data []byte) error {
+	var s string
+	//goland:noinspection GoUnhandledErrorResult
+	json.Unmarshal(data, &s)
+	out := AttendeeType(s)
+	switch out {
+	case AttendeeRequired, AttendeeOptional, AttendeeIsResource:
+		*in = out
+		return nil
+	}
+	return errors.New("invalid attendee type")
+}
+
+
 type CalendarEventShowAs string
 
 //goland:noinspection SpellCheckingInspection

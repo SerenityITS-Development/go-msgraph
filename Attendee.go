@@ -2,7 +2,6 @@ package msgraph
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -12,36 +11,6 @@ type Attendee struct {
 	ResponseStatus *ResponseStatus `json:"status,omitempty"`
 	ProposedNewTime *TimeSlot `json:"proposedNewTime,omitempty"`
 	EmailAddress    *EmailAddress `json:"emailAddress,omitempty"`
-}
-
-type AttendeeType string
-
-const (
-	AttendeeRequired AttendeeType = "required"
-	AttendeeOptional AttendeeType = "optional"
-	AttendeeIsResource AttendeeType = "resource"
-)
-
-
-func (in AttendeeType) IsValid() error {
-	switch in {
-	case AttendeeRequired, AttendeeOptional, AttendeeIsResource:
-		return nil
-	}
-	return errors.New("invalid Attendee type")
-}
-
-func (in *AttendeeType) UnmarshalJSON(data []byte) error {
-	var s string
-	//goland:noinspection GoUnhandledErrorResult
-	json.Unmarshal(data, &s)
-	out := AttendeeType(s)
-	switch out {
-	case AttendeeRequired, AttendeeOptional, AttendeeIsResource:
-		*in = out
-		return nil
-	}
-	return errors.New("invalid attendee type")
 }
 
 func (a Attendee) String() string {

@@ -15,6 +15,15 @@ func (a Attendees) String() string {
 	return "Attendees(" + strings.Join(attendees, " | ") + ")"
 }
 
+func (a Attendees) FindByEmail(email string) (*Attendee, error) {
+	for _, attendee := range a {
+		if attendee.EmailAddress.Address == email {
+			return &attendee, nil
+		}
+	}
+	return nil, ErrFindCalendarEvent
+}
+
 // Equal compares the Attendee to the other Attendee and returns true
 // if the two given Attendees are equal. Otherwise returns false
 func (a Attendees) Equal(other Attendees) bool {
