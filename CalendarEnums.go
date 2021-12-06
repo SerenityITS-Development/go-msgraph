@@ -162,3 +162,38 @@ func (in *ContentType) UnmarshalJSON(data []byte) error {
 	}
 	return errors.New("invalid ContentType type")
 }
+
+
+type CalendarEventShowAs string
+
+//goland:noinspection SpellCheckingInspection
+const (
+	ShowAsFree      CalendarEventShowAs = "free"
+	ShowAsTentative CalendarEventShowAs = "tentative"
+	ShowAsBusy      CalendarEventShowAs = "busy"
+	ShowAsOOTO      CalendarEventShowAs        = "oof"
+	ShowAssWorkingElsewhere CalendarEventShowAs = "workingElsewhere"
+	ShowAsUnknown          CalendarEventShowAs = "unknown"
+)
+
+
+func (in CalendarEventShowAs) IsValid() error {
+	switch in {
+	case ShowAsUnknown, ShowAsFree, ShowAsTentative, ShowAsBusy, ShowAsOOTO, ShowAssWorkingElsewhere:
+		return nil
+	}
+	return errors.New("invalid show as type")
+}
+
+func (in *CalendarEventShowAs) UnmarshalJSON(data []byte) error {
+	var s string
+	//goland:noinspection GoUnhandledErrorResult
+	json.Unmarshal(data, &s)
+	out := CalendarEventShowAs(s)
+	switch out {
+	case ShowAsUnknown, ShowAsFree, ShowAsTentative, ShowAsBusy, ShowAsOOTO, ShowAssWorkingElsewhere:
+		*in = out
+		return nil
+	}
+	return errors.New("invalid show as type")
+}
