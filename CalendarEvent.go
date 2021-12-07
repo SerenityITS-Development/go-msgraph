@@ -30,18 +30,13 @@ type CalendarEvent struct {
 	ResponseStatus        *ResponseStatus `json:"responseStatus,omitempty"` // how the calendar-owner responded to the event (normally "organizer" because support-calendar is the host)
 
 	Attendees      *Attendees  `json:"attendees,omitempty"` // represents all attendees to this CalendarEvent
-	Organizer      *struct {
-		EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
-	} `json:"organizer,omitempty"`
+	Organizer      *Organizer `json:"organizer,omitempty"`
 
 	graphClient *GraphClient
 
 	AllowNewTimeProposals 	*bool `json:"allowNewTimeProposals,omitempty"`
 	BodyPreview				*string `json:"bodyPreview,omitempty"`
-	Body					*struct {
-		ContentType			*ContentType `json:"contentType,omitempty"`
-		Content				*string 	`json:"content,omitempty"`
-	} `json:"body,omitempty"`
+	Body					*ContentBody `json:"body,omitempty"`
 	Location				*CalendarLocation `json:"location,omitempty"`
 	Locations				*[]CalendarLocation `json:"locations,omitempty"`
 	HideAttendees			*bool `json:"hideAttendees,omitempty"`
@@ -157,17 +152,12 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 		Start                 *DateTimeTimeZone `json:"start,omitempty"`
 		End                   *DateTimeTimeZone `json:"end,omitempty"`
 		Attendees             *Attendees         `json:"attendees,omitempty"`
-		Organizer             *struct {
-			EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
-		} `json:"organizer,omitempty"`
+		Organizer             *Organizer `json:"organizer,omitempty"`
 
 		AllowNewTimeProposals *bool				`json:"allowNewTimeProposals,omitempty"`
 		HideAttendees			*bool			`json:"hideAttendees,omitempty"`
 		BodyPreview				*string			`json:"bodyPreview,omitempty"`
-		Body					*struct {
-			ContentType			*ContentType			`json:"contentType,omitempty"`
-			Content				*string			`json:"content,omitempty"`
-		}			`json:"body,omitempty"`
+		Body					*ContentBody			`json:"body,omitempty"`
 		CancelledOccurrences    *[]string		`json:"cancelledOccurrences,omitempty"`
 		Categories			    *[]string		`json:"categories,omitempty"`
 		ChangeKey				*string			`json:"changeKey,omitempty"`
@@ -324,22 +314,14 @@ func (c *CalendarEvent) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-/*
-// parseTimeAndLocation is just a helper method to shorten the code in the Unmarshal json
-func parseTimeAndLocation(timeToParse, locationToParse string) (time.Time, error) {
-	parsedTime, err := time.Parse("2006-01-02T15:04:05.999999999", timeToParse)
-	if err != nil {
-		return time.Time{}, err
-	}
-	parsedTimeZone, err := time.LoadLocation(locationToParse)
-	if err != nil {
-		return time.Time{}, err
-	}
-	return parsedTime.In(parsedTimeZone), nil
+type ContentBody struct {
+	ContentType			*ContentType			`json:"contentType,omitempty"`
+	Content				*string			`json:"content,omitempty"`
 }
 
- */
-
+type Organizer struct {
+	EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
+}
 
 // mapTimeZoneStrings maps various Timezones used by Microsoft to go-understandable timezones or returns the source-zone if no mapping is found
 func mapTimeZoneStrings(timeZone string) (*time.Location, error) {
