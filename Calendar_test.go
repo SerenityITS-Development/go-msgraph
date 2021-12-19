@@ -171,6 +171,23 @@ func TestCalendar_CreateEvent(t *testing.T) {
 		log.Fatalf("failed to list events: %v", err2)
 	}
 
+	if eventsList[0].graphClient == nil {
+		if calendar.ID != "" {
+			err = calendar.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar: %v", err)
+			}
+		}
+
+		if group.ID != "" {
+			err = group.Delete()
+			if err != nil {
+				log.Fatalf("failed to delete calendar group: %v", err)
+			}
+		}
+		log.Fatalf("failed to set graph client on list events")
+	}
+
 	_, err = eventsList.FindEventByTransactionId("1")
 	if err != nil {
 		err2 := err
