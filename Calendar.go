@@ -145,8 +145,8 @@ func (c Calendar) ListEvents(startDateTime, endDateTime time.Time, opts ...ListQ
 	if err != nil {
 		return nil, err
 	}
-	calendarEvents.setGraphClient(c.graphClient)
-	return calendarEvents, nil
+	newEvents := calendarEvents.setGraphClient(c.graphClient)
+	return newEvents, nil
 }
 
 // UnmarshalJSON implements the json unmarshal to be used by the json-library

@@ -91,7 +91,6 @@ func (c *CalendarEvents) UnmarshalJSON(data []byte) error {
 
 	*c = tmp.CalendarEvents // re-assign the
 
-	//c.CalendarEvents = tmp.CalendarEvents
 	c.SortByStartDateTime()
 	return nil
 }

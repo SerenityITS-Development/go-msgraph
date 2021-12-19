@@ -153,8 +153,8 @@ func (u User) ListCalendarView(startDateTime, endDateTime time.Time, opts ...Lis
 	if err != nil {
 		return nil, err
 	}
-	calendarEvents.setGraphClient(u.graphClient)
-	return calendarEvents, nil
+	newEvents := calendarEvents.setGraphClient(u.graphClient)
+	return newEvents, nil
 }
 
 // getTimeZoneChoices grabs all supported time zones from microsoft for this user.
