@@ -97,6 +97,7 @@ func (u User) CreateCalendarGroup(name string, opts ...CreateQueryOption) (Calen
 
 	reader := bytes.NewReader(bodyBytes)
 	err = u.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &calendarGroup)
+	calendarGroup.setGraphClient(u.graphClient)
 	return calendarGroup, err
 }
 
@@ -148,7 +149,12 @@ func (u User) ListCalendarView(startDateTime, endDateTime time.Time, opts ...Lis
 	reqOpt.queryValues.Add("enddatetime", endDateTime.Format("2006-01-02T00:00:00"))
 
 	var calendarEvents CalendarEvents
-	return calendarEvents, u.graphClient.makeGETAPICall(resource, reqOpt, &calendarEvents)
+	err := u.graphClient.makeGETAPICall(resource, reqOpt, &calendarEvents)
+	if err != nil {
+		return nil, err
+	}
+	calendarEvents.setGraphClient(u.graphClient)
+	return calendarEvents, nil
 }
 
 // getTimeZoneChoices grabs all supported time zones from microsoft for this user.

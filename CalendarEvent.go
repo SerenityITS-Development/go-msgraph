@@ -61,6 +61,10 @@ type CalendarEvent struct {
 	Recurrence				*PatternedRecurrence `json:"recurrence,omitempty"`
 }
 
+func (c CalendarEvent) setGraphClient(gC *GraphClient) {
+	c.graphClient = gC
+}
+
 // GetFirstAttendee returns the first Attendee that is not the organizer of the event from the Attendees array.
 // If none is found then an Attendee with the Name of "None" will be returned.
 func (c CalendarEvent) GetFirstAttendee() Attendee {

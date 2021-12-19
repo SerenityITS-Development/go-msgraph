@@ -141,7 +141,12 @@ func (c Calendar) ListEvents(startDateTime, endDateTime time.Time, opts ...ListQ
 	reqOpt.queryValues.Add("enddatetime", endDateTime.Format("2006-01-02T00:00:00"))
 
 	var calendarEvents CalendarEvents
-	return calendarEvents, c.graphClient.makeGETAPICall(resource, reqOpt, &calendarEvents)
+	err = c.graphClient.makeGETAPICall(resource, reqOpt, &calendarEvents)
+	if err != nil {
+		return nil, err
+	}
+	calendarEvents.setGraphClient(c.graphClient)
+	return calendarEvents, nil
 }
 
 // UnmarshalJSON implements the json unmarshal to be used by the json-library
