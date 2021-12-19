@@ -13,7 +13,7 @@ type CalendarEvents []CalendarEvent
 
 func (c CalendarEvents) setGraphClient(gC *GraphClient) CalendarEvents {
 	for i := range c {
-		c[i].setGraphClient(gC)
+		c[i] = c[i].setGraphClient(gC)
 	}
 	return c
 }

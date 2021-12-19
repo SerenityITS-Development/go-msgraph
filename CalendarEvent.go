@@ -61,8 +61,9 @@ type CalendarEvent struct {
 	Recurrence				*PatternedRecurrence `json:"recurrence,omitempty"`
 }
 
-func (c CalendarEvent) setGraphClient(gC *GraphClient) {
+func (c CalendarEvent) setGraphClient(gC *GraphClient) CalendarEvent {
 	c.graphClient = gC
+	return c
 }
 
 // GetFirstAttendee returns the first Attendee that is not the organizer of the event from the Attendees array.
