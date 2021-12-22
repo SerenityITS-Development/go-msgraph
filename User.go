@@ -277,3 +277,41 @@ func (u User) Equal(other User) bool {
 		u.Mail == other.Mail && u.MobilePhone == other.MobilePhone && u.PreferredLanguage == other.PreferredLanguage &&
 		u.Surname == other.Surname && u.UserPrincipalName == other.UserPrincipalName
 }
+
+func (u User) ListCategories(opts ...ListQueryOption) (OutlookCategories, error) {
+	if u.graphClient == nil {
+		return OutlookCategories{}, ErrNotGraphClientSourced
+	}
+	resource := fmt.Sprintf("/users/%v/outlook/masterCategories", u.ID)
+
+	var marsh struct {
+		OutlookCategories `json:"value"`
+	}
+	err := u.graphClient.makeGETAPICall(resource, compileListQueryOptions(opts), &marsh)
+	marsh.OutlookCategories.setGraphClient(&u)
+	return marsh.OutlookCategories, err
+}
+
+func (u User) CreateOutlookCategory(name string, opts ...CreateQueryOption) (OutlookCategory, error) {
+
+	if u.graphClient == nil {
+		return OutlookCategory{}, ErrNotGraphClientSourced
+	}
+
+	resource := fmt.Sprintf("/users/%v/outlook/masterCategories", u.ID)
+	category := OutlookCategory{graphClient: u.graphClient, user: &u}
+	bodyBytes, err := json.Marshal(struct {
+		Name string `json:"name"`
+	}{Name: name})
+	if err != nil {
+		return OutlookCategory{}, err
+	}
+	if err != nil {
+		return category, err
+	}
+
+	reader := bytes.NewReader(bodyBytes)
+	err = u.graphClient.makePOSTAPICall(resource, compileCreateQueryOptions(opts), reader, &category)
+	category.setGraphClient(&u)
+	return category, err
+}

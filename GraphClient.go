@@ -260,7 +260,7 @@ func (g *GraphClient) performSkipTokenRequest(req *http.Request, v interface{}) 
 // does a json.Unmarshal into the v interface{} and returns the error of it if everything went well so far.
 func (g *GraphClient) performRequest(req *http.Request, v interface{}) error {
 	httpClient := &http.Client{
-		Timeout: time.Second * 10,
+		Timeout: HttpRequestTimeout,
 	}
 	resp, err := httpClient.Do(req)
 	if err != nil {

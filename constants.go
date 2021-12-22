@@ -80,4 +80,6 @@ var (
 	// ErrFindCalendarGroup is returned on any func that tries to find a calendar group with the given parameters that cannot be found
 	ErrFindCalendarGroup = errors.New("unable to find calendar group")
 	ErrFindCalendarEvent = errors.New("unable to find calendar event")
+	ErrFindOutlookCategory = errors.New("unable to find outlook category")
+	HttpRequestTimeout = time.Second * 10
 )
